@@ -11,71 +11,74 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { AuthContext } from '../provider/AuthProvider'
-import { GoogleAuthProvider } from 'firebase/auth/cordova'
-import { signInWithPopup } from 'firebase/auth'
+
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import auth from '../firebase/firebase.config'
 import toast, { Toaster } from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
-// import getLPTheme from '../getLPTheme'
-// import React from 'react'
-
-// function Copyright(props) {
-//   return (
-//     <Typography
-//       variant="body2"
-//       color="text.secondary"
-//       align="center"
-//       {...props}
-//     >
-//       {'Copyright © '}
-//       <Link color="inherit" href="https://mui.com/">
-//         Your Website
-//       </Link>{' '}
-//       {new Date().getFullYear()}
-//       {'.'}
-//     </Typography>
-//   )
-// }
-
-// TODO remove, this demo shouldn't need to reset the theme.
+import { VscEye, VscEyeClosed } from 'react-icons/vsc'
 
 const defaultTheme = createTheme()
 
 export default function SignIn() {
-  const { createUser } = useContext(AuthContext)
+  const { signinUser } = useContext(AuthContext)
+  const [showPassword, setShowPassword] = useState(false)
+  const [passTextError, setPassTextError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const handleSubmit = (event) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    })
-  }
 
-  let navigate = useNavigate()
-  let location = useLocation()
-  const provider = new GoogleAuthProvider()
-  const handleSignInWithGoogle = () => {
-    signInWithPopup(auth, provider)
+    const email = data.get('email')
+    const password = data.get('password')
+
+    const regex = /^(?=.*[A-Z])(?=.*[a-z]).{6,}$/
+    if (password.length < 6) {
+      setPassTextError('Password should be at least 6 character')
+      return // returning so that the validation stops here, no need to go to database in firebase
+    } else if (!regex.test(password)) {
+      setPassTextError('Password must contain uppercase letter')
+      return
+    } else {
+      setPassTextError('')
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/
+
+    if (!emailRegex.test(email)) {
+      setEmailError('Invalid email format')
+      return // Return to stop further validation
+    } else {
+      setEmailError('')
+    }
+
+    signinUser(email, password)
       .then((result) => {
-        console.log(result.user)
-        // toast.success('You have successfully logged in your account')
-        toast('You have successfully logged in your account', {
-          icon: '👏',
-          style: {
-            borderRadius: '10px',
-            background: '#333',
-            color: '#fff',
-          },
-        })
+        toast.success(`You have successfully logged in your account`)
 
         // navigate(location?.state ? location.state : '/')
         setTimeout(() => {
           navigate(location?.state ? location.state : '/')
-        }, 500)
+        }, 1000)
         console.log(location)
+      })
+      .catch((error) => console.error(error))
+  }
+
+  const provider = new GoogleAuthProvider()
+  const handleSignUpWithGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log(result.user)
+        toast.success(`You have successfully logged in your account`)
+        setTimeout(() => {
+          navigate(location?.state ? location.state : '/')
+        }, 1000)
       })
       .catch((error) => console.error(error))
   }
@@ -100,7 +103,7 @@ export default function SignIn() {
           </Typography>
           <div className="mt-6 w-full ">
             <Button
-              onClick={handleSignInWithGoogle}
+              onClick={handleSignUpWithGoogle}
               variant="outlined"
               // href="#"
               className="w-full  justify-center px-6 h-12 mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg dark:border-gray-400 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -138,6 +141,7 @@ export default function SignIn() {
             onSubmit={handleSubmit}
             noValidate
             sx={{ mt: 1 }}
+            className="relative"
           >
             <TextField
               margin="normal"
@@ -148,8 +152,12 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              type="email"
             />
-            <TextField
+            {emailError && (
+              <p className="text-red-500 text-[8px]">{emailError}</p>
+            )}
+            {/* <TextField
               margin="normal"
               required
               fullWidth
@@ -158,7 +166,27 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+            /> */}
+            {/* <Grid item xs={12} className="relative"> */}
+            <TextField
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type={!showPassword ? 'password' : 'text'}
+              id="password"
+              autoComplete="new-password"
             />
+            <div
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute cursor-pointer bottom-0 right-0 -translate-y-[160px] -translate-x-[70%] text-[18px]"
+            >
+              {showPassword ? <VscEye /> : <VscEyeClosed />}
+            </div>
+            {passTextError && (
+              <p className="text-red-500 text-[8px]">{passTextError}</p>
+            )}
+            {/* </Grid> */}
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"

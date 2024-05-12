@@ -11,37 +11,95 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { useContext, useState } from 'react'
+import { AuthContext } from '../provider/AuthProvider'
+import { VscEye, VscEyeClosed } from 'react-icons/vsc'
+import toast, { Toaster } from 'react-hot-toast'
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile,
+} from 'firebase/auth'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  )
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
+import auth from '../firebase/firebase.config'
 
 const defaultTheme = createTheme()
 
 export default function SignUp() {
+  const { createUser } = useContext(AuthContext)
+  const [passTextError, setPassTextError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
+  let navigate = useNavigate()
+  let location = useLocation()
+
   const handleSubmit = (event) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    })
+    const email = data.get('email')
+    const password = data.get('password')
+    const firstname = data.get('firstName')
+    const lastName = data.get('lastName')
+    const photo = data.get('photo')
+
+    const name = firstname + lastName
+    const regex = /^(?=.*[A-Z])(?=.*[a-z]).{6,}$/
+    if (password.length < 6) {
+      setPassTextError('Password should be at least 6 character')
+      return // returning so that the validation stops here, no need to go to database in firebase
+    } else if (!regex.test(password)) {
+      setPassTextError('Password must contain uppercase letter')
+      return
+    } else {
+      setPassTextError('')
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/
+
+    if (!emailRegex.test(email)) {
+      setEmailError('Invalid email format')
+      return // Return to stop further validation
+    } else {
+      setEmailError('')
+    }
+
+    createUser(email, password)
+      .then((result) => {
+        updateProfile(result.user, {
+          displayName: name,
+          photoURL: photo,
+        })
+        toast.success(`Account created successfully, ${name}`)
+        // console.log(photoUrl)
+        setTimeout(() => {
+          navigate(location?.state ? location.state : '/')
+        }, 1000)
+      })
+      .catch((error) => {
+        console.log(error.code)
+        console.log(error.message)
+        // setLoginError(error.message)
+        toast.error(
+          error.message === 'Firebase: Error (auth/email-already-in-use).'
+            ? 'Email already in use. Try logging in instead.'
+            : 'Something went Worng'
+        )
+      })
+  }
+
+  const provider = new GoogleAuthProvider()
+  const handleSignUpWithGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log(result.user)
+        toast.success(`You have successfully logged in your account`)
+        setTimeout(() => {
+          navigate(location?.state ? location.state : '/')
+        }, 1000)
+      })
+      .catch((error) => console.error(error))
   }
 
   return (
@@ -65,6 +123,7 @@ export default function SignUp() {
           <div className="mt-6 w-full ">
             <Button
               variant="outlined"
+              onClick={handleSignUpWithGoogle}
               // href="#"
               className="w-full  justify-center px-6 h-12 mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg dark:border-gray-400 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
             >
@@ -133,18 +192,43 @@ export default function SignUp() {
                   name="email"
                   autoComplete="email"
                 />
+                {emailError && (
+                  <p className="text-red-500 text-[8px]">{emailError}</p>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
+                  id="photo"
+                  label="Photo Url"
+                  name="photo"
+                  autoComplete="photo"
+                />
+              </Grid>
+
+              <Grid item xs={12} className="relative">
+                <TextField
+                  required
+                  fullWidth
                   name="password"
                   label="Password"
-                  type="password"
+                  type={!showPassword ? 'password' : 'text'}
                   id="password"
                   autoComplete="new-password"
                 />
+                <div
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute cursor-pointer top-1/2 right-0 -translate-y-[10%] -translate-x-[70%] text-[18px]"
+                >
+                  {/* {showPassword ? <FaEye /> : <FaEyeSlash />} */}
+                  {showPassword ? <VscEye /> : <VscEyeClosed />}
+                </div>
+                {passTextError && (
+                  <p className="text-red-500 text-[8px]">{passTextError}</p>
+                )}
               </Grid>
+
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
@@ -173,6 +257,7 @@ export default function SignUp() {
         </Box>
         {/* <Copyright sx={{ mt: 5 }} /> */}
       </Container>
+      <Toaster position="right" />
     </ThemeProvider>
   )
 }

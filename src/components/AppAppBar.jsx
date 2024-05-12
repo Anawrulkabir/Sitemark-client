@@ -15,6 +15,8 @@ import ToggleColorMode from './ToggleColorMode'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../provider/AuthProvider'
 
+import AlertDialogSlide from './Dialogue/AlertDialogSlide'
+
 const logoStyle = {
   width: '140px',
   height: 'auto',
@@ -24,6 +26,12 @@ const logoStyle = {
 function AppAppBar({ mode, toggleColorMode }) {
   const [open, setOpen] = React.useState(false)
   const { user, logOut } = React.useContext(AuthContext)
+  // const { displayName, photoURL, email, metadata } = user
+  const [openDialogue, setOpenDialogue] = React.useState(false)
+
+  const toggleDialog = () => {
+    setOpenDialogue(!openDialogue)
+  }
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen)
@@ -172,19 +180,38 @@ function AppAppBar({ mode, toggleColorMode }) {
               }}
             >
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
-              <Link to={'/signin'}>
-                {' '}
+              {user ? (
                 <Button
                   color="primary"
                   variant="text"
                   size="small"
                   component="a"
+                  onClick={toggleDialog}
                   // href="/material-ui/getting-started/templates/sign-in/"
                   // target="_blank"
                 >
-                  Sign in
+                  <img
+                    src={user.photoURL}
+                    alt=""
+                    className="h-6 w-6 rounded-full"
+                  />
                 </Button>
-              </Link>
+              ) : (
+                <Link to={'/signin'}>
+                  {' '}
+                  <Button
+                    color="primary"
+                    variant="text"
+                    size="small"
+                    component="a"
+                    // href="/material-ui/getting-started/templates/sign-in/"
+                    // target="_blank"
+                  >
+                    Sign in
+                  </Button>
+                </Link>
+              )}
+
               {user ? (
                 <Button
                   onClick={() => logOut()}
@@ -269,43 +296,73 @@ function AppAppBar({ mode, toggleColorMode }) {
                   <MenuItem onClick={() => scrollToSection('faq')}>
                     FAQ
                   </MenuItem>
-                  <Divider />
                   <MenuItem>
-                    <Link to={'/signup'} className="w-full">
-                      {' '}
+                    <button
+                      onClick={() => {
+                        toggleDialog()
+                        toggleDrawer(false)
+                      }}
+                    >
+                      My Profile
+                    </button>
+                  </MenuItem>
+                  <Divider />
+                  {!user && (
+                    <MenuItem>
+                      <Link to={'/signup'} className="w-full">
+                        <Button
+                          color="primary"
+                          variant="contained"
+                          component="a"
+                          // href="/material-ui/getting-started/templates/sign-up/"
+                          // target="_blank"
+                          sx={{ width: '100%' }}
+                        >
+                          Sign up
+                        </Button>
+                      </Link>
+                    </MenuItem>
+                  )}
+
+                  {user ? (
+                    <MenuItem>
                       <Button
                         color="primary"
                         variant="contained"
                         component="a"
-                        // href="/material-ui/getting-started/templates/sign-up/"
+                        onClick={() => logOut()}
+                        // href="/material-ui/getting-started/templates/sign-in/"
                         // target="_blank"
                         sx={{ width: '100%' }}
                       >
-                        Sign up
+                        Log Out
                       </Button>
-                    </Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link to={'/signin'} className="w-full">
-                      {' '}
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        component="a"
-                        href="/material-ui/getting-started/templates/sign-in/"
-                        // target="_blank"
-                        sx={{ width: '100%' }}
-                      >
-                        Sign in
-                      </Button>
-                    </Link>
-                  </MenuItem>
+                    </MenuItem>
+                  ) : (
+                    <MenuItem>
+                      <Link to={'/signin'} className="w-full">
+                        {' '}
+                        <Button
+                          color="primary"
+                          variant="outlined"
+                          component="a"
+                          // href="/material-ui/getting-started/templates/sign-in/"
+                          // target="_blank"
+                          sx={{ width: '100%' }}
+                        >
+                          Sign in
+                        </Button>
+                      </Link>
+                    </MenuItem>
+                  )}
                 </Box>
               </Drawer>
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
+
+      {openDialogue && <AlertDialogSlide />}
     </div>
   )
 }
