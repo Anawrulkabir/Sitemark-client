@@ -9,6 +9,8 @@ import SignUp from './pages/SignUp'
 import MainLayout from './pages/MainLayout'
 import ErrorPage from './pages/ErrorPage'
 import AuthProvider from './provider/AuthProvider'
+import AddBlogs from './pages/AddBlogs'
+import AllBlogs from './pages/AllBlogs'
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,14 @@ const router = createBrowserRouter([
       {
         path: '/checkout',
         element: <Checkout />,
+      },
+      {
+        path: '/addBlogs',
+        element: <AddBlogs></AddBlogs>,
+      },
+      {
+        path: '/all-blogs',
+        element: <AllBlogs />,
       },
     ],
   },

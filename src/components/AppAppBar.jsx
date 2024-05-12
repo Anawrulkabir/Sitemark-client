@@ -155,11 +155,20 @@ function AppAppBar({ mode, toggleColorMode }) {
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('faq')}
+                  onClick={() => scrollToSection('featured-blogs')}
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    <Link to={'/featured-blogs'}> Featured Blogs </Link>
+                    {/* <Link to={'/featured-blogs'}> Featured Blogs </Link> */}
+                    Featured Blogs
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                  // onClick={() => scrollToSection('faq')}
+                  sx={{ py: '6px', px: '12px' }}
+                >
+                  <Typography variant="body2" color="text.primary">
+                    <Link to="/addBlogs"> Add Blogs </Link>
                   </Typography>
                 </MenuItem>
                 <MenuItem
@@ -292,6 +301,9 @@ function AppAppBar({ mode, toggleColorMode }) {
                   </MenuItem>
                   <MenuItem onClick={() => scrollToSection('faq')}>
                     <Link to={'/featured-blogs'}> Featured Blogs </Link>
+                  </MenuItem>
+                  <MenuItem onClick={() => scrollToSection('faq')}>
+                    <Link to={'/addBlogs'}> Add Blogs </Link>
                   </MenuItem>
                   <MenuItem onClick={() => scrollToSection('faq')}>
                     FAQ

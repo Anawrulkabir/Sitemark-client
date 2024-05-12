@@ -19,6 +19,7 @@ import FAQ from '../components/Homepage/FAQ'
 // import Footer from '../components/Homepage/Footer'
 import getLPTheme from '../getLPTheme'
 import AppAppBar from '../components/AppAppBar'
+import FeaturedBlogs from '../components/Homepage/FeaturedBlogs'
 
 function ToggleCustomTheme({ showCustomTheme, toggleCustomTheme }) {
   return (
@@ -85,6 +86,7 @@ export default function LandingPage() {
         <LogoCollection />
         <Features />
         <Divider />
+        <FeaturedBlogs />
         <Testimonials />
         <Divider />
         <Highlights />
