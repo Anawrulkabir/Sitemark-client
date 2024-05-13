@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Drawer from '@mui/material/Drawer'
 import MenuIcon from '@mui/icons-material/Menu'
 import ToggleColorMode from './ToggleColorMode'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { AuthContext } from '../provider/AuthProvider'
 
 import AlertDialogSlide from './Dialogue/AlertDialogSlide'
@@ -28,6 +28,9 @@ function AppAppBar({ mode, toggleColorMode }) {
   const { user, logOut } = React.useContext(AuthContext)
   // const { displayName, photoURL, email, metadata } = user
   const [openDialogue, setOpenDialogue] = React.useState(false)
+
+  const location = useLocation()
+  console.log(location.pathname)
 
   const toggleDialog = () => {
     setOpenDialogue(!openDialogue)
@@ -114,38 +117,49 @@ function AppAppBar({ mode, toggleColorMode }) {
                     <Link to={'/'}>Home</Link>
                   </Typography>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => scrollToSection('features')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body2" color="text.primary">
-                    Features
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => scrollToSection('testimonials')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body2" color="text.primary">
-                    Testimonials
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => scrollToSection('highlights')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body2" color="text.primary">
-                    Highlights
-                  </Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => scrollToSection('pricing')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body2" color="text.primary">
-                    Pricing
-                  </Typography>
-                </MenuItem>
+                {location.pathname == '/' && (
+                  <MenuItem
+                    onClick={() => scrollToSection('features')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      Features
+                    </Typography>
+                  </MenuItem>
+                )}
+
+                {location.pathname == '/' && (
+                  <MenuItem
+                    onClick={() => scrollToSection('testimonials')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      Testimonials
+                    </Typography>
+                  </MenuItem>
+                )}
+
+                {location.pathname == '/' && (
+                  <MenuItem
+                    onClick={() => scrollToSection('highlights')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      Highlights
+                    </Typography>
+                  </MenuItem>
+                )}
+                {location.pathname == '/' && (
+                  <MenuItem
+                    onClick={() => scrollToSection('pricing')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      Pricing
+                    </Typography>
+                  </MenuItem>
+                )}
+
                 <MenuItem
                   // onClick={() => scrollToSection('faq')}
                   sx={{ py: '6px', px: '12px' }}
@@ -154,15 +168,18 @@ function AppAppBar({ mode, toggleColorMode }) {
                     <Link to={'/all-blogs'}>All blogs</Link>
                   </Typography>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => scrollToSection('featured-blogs')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body2" color="text.primary">
-                    {/* <Link to={'/featured-blogs'}> Featured Blogs </Link> */}
-                    Featured Blogs
-                  </Typography>
-                </MenuItem>
+                {location.pathname == '/' && (
+                  <MenuItem
+                    onClick={() => scrollToSection('featured-blogs')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      {/* <Link to={'/featured-blogs'}> Featured Blogs </Link> */}
+                      Featured Blogs
+                    </Typography>
+                  </MenuItem>
+                )}
+
                 <MenuItem
                   // onClick={() => scrollToSection('faq')}
                   sx={{ py: '6px', px: '12px' }}
@@ -171,14 +188,17 @@ function AppAppBar({ mode, toggleColorMode }) {
                     <Link to="/addBlogs"> Add Blogs </Link>
                   </Typography>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => scrollToSection('faq')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body2" color="text.primary">
-                    FAQ
-                  </Typography>
-                </MenuItem>
+
+                {location.pathname == '/' && (
+                  <MenuItem
+                    onClick={() => scrollToSection('faq')}
+                    sx={{ py: '6px', px: '12px' }}
+                  >
+                    <Typography variant="body2" color="text.primary">
+                      FAQ
+                    </Typography>
+                  </MenuItem>
+                )}
               </Box>
             </Box>
             <Box

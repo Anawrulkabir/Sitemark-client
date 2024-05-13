@@ -11,6 +11,7 @@ import ErrorPage from './pages/ErrorPage'
 import AuthProvider from './provider/AuthProvider'
 import AddBlogs from './pages/AddBlogs'
 import AllBlogs from './pages/AllBlogs'
+import BlogDetails from './pages/BlogDetails'
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,15 @@ const router = createBrowserRouter([
       {
         path: '/all-blogs',
         element: <AllBlogs />,
+        loader: () =>
+          // fetch('https://my-project-server-ten.vercel.app/allBlogs'),
+          fetch('http://localhost:3000/allBlogs'),
+      },
+      {
+        path: '/all-blogs/:id',
+        element: <BlogDetails />,
+        loader: ({ params }) =>
+          fetch(`http://localhost:3000/allBlogs/${params.id}`),
       },
     ],
   },
