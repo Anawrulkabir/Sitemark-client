@@ -12,7 +12,6 @@ import AuthProvider from './provider/AuthProvider'
 import AddBlogs from './pages/AddBlogs'
 import AllBlogs from './pages/AllBlogs'
 import BlogDetails from './pages/BlogDetails'
-import FeaturedBlogs from './components/Homepage/FeaturedBlogs'
 import FeaturedBlogsPage from './pages/FeaturedBlogsPage'
 
 const router = createBrowserRouter([

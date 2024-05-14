@@ -1,7 +1,8 @@
-import { Button } from '@mui/material'
+import { Button, Tooltip } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Link, useLoaderData } from 'react-router-dom'
+import Search from '../components/CustomSearch/Search'
 
 const apiErrorPosts = [
   {
@@ -124,6 +125,9 @@ const topics = [
 
 export default function AllBlogs() {
   const [blogs, setBlogs] = useState(useLoaderData())
+  const [isFilled, setIsFilled] = useState(false)
+
+  const { _id, title, additional_info, category, description } = blogs
 
   const handleSort = (e) => {
     e.preventDefault()
@@ -142,6 +146,44 @@ export default function AllBlogs() {
     //   .then((res) => console.log(res))
     //   .then((data) => setBlogs(data))
   }
+  const handleSortByTitle = (e) => {
+    e.preventDefault()
+    const title = e.target.titleSearch.value
+
+    if (title === '') {
+      const url = `http://localhost:3000/allBlogs`
+      axios.get(url).then((res) => setBlogs(res.data))
+    } else {
+      const url = `http://localhost:3000/allBlogs?title=${title}`
+      axios.get(url).then((res) => setBlogs(res.data))
+    }
+
+    // fetch(url)
+    //   .then((res) => console.log(res))
+    //   .then((data) => setBlogs(data))
+  }
+
+  // const toggleFill = () => {
+  //   setIsFilled(!isFilled)
+  //   console.log('btn clicked')
+  // }
+  // console.log(isFilled)
+
+  const [filledPosts, setFilledPosts] = useState([])
+
+  const toggleFill = (postId) => {
+    // Use functional form of setState to ensure correct state updates
+    setFilledPosts((prevFilledPosts) => {
+      // Check if postId is already in the filled posts array
+      if (prevFilledPosts.includes(postId)) {
+        // If it is, remove it
+        return prevFilledPosts.filter((id) => id !== postId)
+      } else {
+        // If it's not, add it
+        return [...prevFilledPosts, postId]
+      }
+    })
+  }
 
   return (
     <div className="bg-white py-24 sm:py-32">
@@ -154,31 +196,56 @@ export default function AllBlogs() {
             Learn how to grow your business with our expert advice.
           </p>
         </div>
-        <div className="sm:col-span-3 flex gap-3 items-center justify-center mt-4">
-          <label
-            htmlFor="country"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Sort Blogs
-          </label>
-          <div className="">
-            <select
-              onChange={handleSort}
-              id="country"
-              name="category"
-              autoComplete="country-name"
-              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-            >
-              {/* {blogs.map((topic) => (
+        <div className="flex lg:flex-row flex-col items-center justify-center lg:gap-6   mt-4 w-full lg:mx-auto  border-b  shadow-md sm:mb-4">
+          <div className=" flex  flex-col">
+            <p className="text-xs text-zinc-500">Search by category</p>
+            <div className="border w-full">
+              <select
+                onChange={handleSort}
+                id="country"
+                name="category"
+                autoComplete="country-name"
+                className="block w-full rounded-md border-0 lg:py-1.5 py-2  pl-2 pr-24  text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+              >
+                {/* {blogs.map((topic) => (
                 <option key={topic._id}>{topic}</option>
               ))} */}
-              {topics.map((topic, index) => (
-                <option key={index}>{topic}</option>
-              ))}
-            </select>
+                {topics.map((topic, index) => (
+                  <option key={index}>{topic}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className=" p-3 ">
+            <p className="text-xs text-zinc-500">
+              Search by title (Not Working)
+            </p>
+            <Search />
+          </div>
+          <div className=" p-3">
+            <p className="text-xs text-zinc-500">Search by title</p>
+            <form action="" onSubmit={handleSortByTitle} className="flex gap-3">
+              <input
+                type="search"
+                name="titleSearch"
+                placeholder="Data Science"
+                className="border  rounded-md border-gray-300 pl-2 pr-12"
+              />
+
+              <Button
+                type="submit"
+                value={'Search'}
+                className="border"
+                variant="contained"
+                size="small"
+              >
+                Search
+              </Button>
+            </form>
           </div>
         </div>
-        <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 border-t border-gray-200 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+
+        <div className="mx-auto  grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16  border-gray-200 pt-4 lg:mx-0 lg:max-w-none lg:grid-cols-3 ">
           {blogs.map((post) => (
             <article
               key={post?._id}
@@ -192,10 +259,10 @@ export default function AllBlogs() {
               />
               <div className="flex items-center gap-x-4 text-xs">
                 <time
-                  dateTime={post?.additional_info.published_date}
+                  dateTime={post?.additional_info?.published_date}
                   className="text-gray-500"
                 >
-                  {post?.additional_info.published_date}
+                  {post?.additional_info?.published_date}
                 </time>
                 <a
                   //   href={post.category.href}
@@ -225,30 +292,54 @@ export default function AllBlogs() {
                   <p className="font-semibold text-gray-900">
                     <a>
                       <span className="absolute inset-0" />
-                      {post?.additional_info.author}
+                      {post?.additional_info?.author}
                     </a>
                   </p>
                   <p className="text-gray-600">Co-Founder / CTO</p>
                 </div>
                 <div className="flex-1  rounded-full">
-                  <div className="flex flex-row-reverse items-center justify-start pr-3  text-right gap-2">
+                  <div className="flex flex-row-reverse items-center justify-start pr-3  text-right gap-0">
                     <Link to={`/all-blogs/${post._id}`}>
-                      <Button className="">Details</Button>
+                      <Button className="" size="small">
+                        Details
+                      </Button>
                     </Link>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                      />
-                    </svg>
+
+                    <Tooltip title="Add to Wishlist">
+                      <Button
+                        // onClick={toggleFill}
+                        onClick={() => toggleFill(post._id)}
+                        className="cursor-pointer border"
+                        size="small"
+                        variant="text"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          // fill="none"
+                          // fill={isFilled ? 'red' : 'none'}
+                          fill={filledPosts.includes(post._id) ? 'red' : 'none'}
+                          stroke={
+                            !filledPosts.includes(post._id)
+                              ? 'currentColor'
+                              : ''
+                          }
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          // stroke={!isFilled ? 'currentColor' : ''}
+                          // stroke="currentColor"
+                          // className="w-5 h-5 active:fill-red-600"
+                          className={`w-5 h-5 cursor-pointer ${
+                            isFilled ? 'fill-red-600' : ''
+                          }`}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                          />
+                        </svg>
+                      </Button>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
