@@ -12,10 +12,11 @@ import MenuItem from '@mui/material/MenuItem'
 import Drawer from '@mui/material/Drawer'
 import MenuIcon from '@mui/icons-material/Menu'
 import ToggleColorMode from './ToggleColorMode'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../provider/AuthProvider'
 
 import AlertDialogSlide from './Dialogue/AlertDialogSlide'
+import toast, { ToastBar, Toaster } from 'react-hot-toast'
 
 const logoStyle = {
   width: '140px',
@@ -28,6 +29,7 @@ function AppAppBar({ mode, toggleColorMode }) {
   const { user, logOut } = React.useContext(AuthContext)
   // const { displayName, photoURL, email, metadata } = user
   const [openDialogue, setOpenDialogue] = React.useState(false)
+  const navigate = useNavigate()
 
   const location = useLocation()
   console.log(location.pathname)
@@ -51,6 +53,17 @@ function AppAppBar({ mode, toggleColorMode }) {
         behavior: 'smooth',
       })
       setOpen(false)
+    }
+  }
+  // handle add blogs page - if user ? add blog page : sign up page
+  const handleAddBlogs = () => {
+    if (!user) {
+      setTimeout(() => {
+        navigate('/signin')
+      }, 1500)
+      toast.success('You must login to add blogs')
+    } else {
+      navigate('/addBlogs')
     }
   }
 
@@ -174,8 +187,8 @@ function AppAppBar({ mode, toggleColorMode }) {
                     sx={{ py: '6px', px: '12px' }}
                   >
                     <Typography variant="body2" color="text.primary">
-                      {/* <Link to={'/featured-blogs'}> Featured Blogs </Link> */}
-                      Featured Blogs
+                      {/* <Link to={'/featured-blogs'}> Recent Blogs </Link> */}
+                      Recent Blogs
                     </Typography>
                   </MenuItem>
                 )}
@@ -185,11 +198,11 @@ function AppAppBar({ mode, toggleColorMode }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    <Link to="/addBlogs"> Add Blogs </Link>
+                    <button onClick={handleAddBlogs}> Add Blogs </button>
                   </Typography>
                 </MenuItem>
 
-                {location.pathname == '/' && (
+                {/* {location.pathname == '/' && (
                   <MenuItem
                     onClick={() => scrollToSection('faq')}
                     sx={{ py: '6px', px: '12px' }}
@@ -198,7 +211,12 @@ function AppAppBar({ mode, toggleColorMode }) {
                       FAQ
                     </Typography>
                   </MenuItem>
-                )}
+                )} */}
+                <MenuItem sx={{ py: '6px', px: '12px' }}>
+                  <Typography variant="body2" color="text.primary">
+                    <Link to="featuredBlogs">Featured</Link>
+                  </Typography>
+                </MenuItem>
               </Box>
             </Box>
             <Box
@@ -320,13 +338,20 @@ function AppAppBar({ mode, toggleColorMode }) {
                     <Link to={'/all-blogs'}> All Blogs </Link>
                   </MenuItem>
                   <MenuItem onClick={() => scrollToSection('faq')}>
-                    <Link to={'/featured-blogs'}> Featured Blogs </Link>
+                    <Link to={'/featured-blogs'}> Recent Blogs </Link>
                   </MenuItem>
                   <MenuItem onClick={() => scrollToSection('faq')}>
-                    <Link to={'/addBlogs'}> Add Blogs </Link>
+                    {/* <Link to={'/addBlogs'}> Add Blogs </Link> */}
+                    <button onClick={handleAddBlogs}> Add Blogs </button>
                   </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('faq')}>
+                  {/* <MenuItem onClick={() => scrollToSection('faq')}>
                     FAQ
+                  </MenuItem> */}
+                  {/* <MenuItem onClick={() => scrollToSection('faq')}>
+                    FAQ
+                  </MenuItem> */}
+                  <MenuItem>
+                    <Link to="featuredBlogs">Featured</Link>
                   </MenuItem>
                   <MenuItem>
                     <button
@@ -395,6 +420,7 @@ function AppAppBar({ mode, toggleColorMode }) {
       </AppBar>
 
       {openDialogue && <AlertDialogSlide />}
+      <Toaster position="bottom-right" />
     </div>
   )
 }

@@ -12,8 +12,9 @@ const topics = [
 ]
 
 import { PhotoIcon } from '@heroicons/react/24/solid'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { AuthContext } from '../provider/AuthProvider'
+import axios from 'axios'
 
 export default function Example() {
   const { user } = useContext(AuthContext)
@@ -28,7 +29,17 @@ export default function Example() {
     const image = form.file_upload.value
     const imageurl = form.imageUrl.value
 
+    const post = { category, title, description, imageurl }
+
     console.log(category, title, description, imageurl)
+
+    try {
+      axios
+        .post('http://localhost:3000/addBlog', post)
+        .then((res) => console.log(res.data))
+    } catch {
+      ;(err) => console.log(err)
+    }
   }
 
   return (

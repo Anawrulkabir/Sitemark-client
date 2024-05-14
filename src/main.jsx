@@ -12,6 +12,8 @@ import AuthProvider from './provider/AuthProvider'
 import AddBlogs from './pages/AddBlogs'
 import AllBlogs from './pages/AllBlogs'
 import BlogDetails from './pages/BlogDetails'
+import FeaturedBlogs from './components/Homepage/FeaturedBlogs'
+import FeaturedBlogsPage from './pages/FeaturedBlogsPage'
 
 const router = createBrowserRouter([
   {
@@ -51,6 +53,11 @@ const router = createBrowserRouter([
         element: <BlogDetails />,
         loader: ({ params }) =>
           fetch(`http://localhost:3000/allBlogs/${params.id}`),
+      },
+      {
+        path: '/featuredBlogs',
+        element: <FeaturedBlogsPage />,
+        loader: () => fetch('http://localhost:3000/allBlogs'),
       },
     ],
   },
