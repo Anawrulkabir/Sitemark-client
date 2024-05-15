@@ -36,7 +36,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/checkout',
-        element: <Checkout />,
+        element: (
+          <PrivateRoute>
+            <Checkout />
+          </PrivateRoute>
+        ),
       },
       {
         path: '/addBlogs',
@@ -50,8 +54,7 @@ const router = createBrowserRouter([
         path: '/all-blogs',
         element: <AllBlogs />,
         loader: () =>
-          // fetch('https://my-project-server-ten.vercel.app/allBlogs'),
-          fetch('http://localhost:3000/allBlogs'),
+          fetch(`${import.meta.env.VITE_CONNECTION_STRING}/allBlogs`),
       },
       {
         path: '/all-blogs/:id',
@@ -61,19 +64,26 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
         loader: ({ params }) =>
-          fetch(`http://localhost:3000/allBlogs/${params.id}`),
+          fetch(
+            `${import.meta.env.VITE_CONNECTION_STRING}/allBlogs/${params.id}`
+          ),
       },
       {
         path: '/featuredBlogs',
         element: <FeaturedBlogsPage />,
-        loader: () => fetch('http://localhost:3000/allBlogs'),
+        loader: () =>
+          fetch(`${import.meta.env.VITE_CONNECTION_STRING}/allBlogs`),
       },
       {
         path: '/wishlist',
-        element: <WishList />,
+        element: (
+          <PrivateRoute>
+            <WishList />
+          </PrivateRoute>
+        ),
         loader: () =>
           // fetch('https://my-project-server-ten.vercel.app/allBlogs'),
-          fetch('http://localhost:3000/allBlogs'),
+          fetch(`${import.meta.env.VITE_CONNECTION_STRING}/allBlogs`),
       },
     ],
   },

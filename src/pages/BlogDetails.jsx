@@ -48,7 +48,7 @@ export default function BlogDetails() {
     // })
     try {
       const res = await axios.post(
-        'http://localhost:3000/comments',
+        `${import.meta.env.VITE_CONNECTION_STRING}/comments`,
         commentData
       )
       console.log(res.data)
@@ -62,7 +62,7 @@ export default function BlogDetails() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/comments?blogId=${_id}`)
+      .get(`${import.meta.env.VITE_CONNECTION_STRING}/comments?blogId=${_id}`)
       .then((res) => setComments(res.data))
   })
 

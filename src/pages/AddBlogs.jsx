@@ -67,7 +67,7 @@ export default function Example() {
     //   .catch((error) => console.log(error.message))
 
     axios
-      .post('http://localhost:3000/addBlog', post)
+      .post(`${import.meta.env.VITE_CONNECTION_STRING}/addBlog`, post)
       .then((res) => {
         console.log(res.data)
         toast.success('Created a new blog post.')

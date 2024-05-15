@@ -138,10 +138,12 @@ export default function WishList() {
     console.log(category)
 
     if (category === 'All Category') {
-      const url = `http://localhost:3000/allBlogs`
+      const url = `${import.meta.env.VITE_CONNECTION_STRING}/allBlogs`
       axios.get(url).then((res) => setBlogs(res.data))
     } else {
-      const url = `http://localhost:3000/allBlogs?category=${category}`
+      const url = `${
+        import.meta.env.VITE_CONNECTION_STRING
+      }/allBlogs?category=${category}`
       axios.get(url).then((res) => setBlogs(res.data))
     }
   }
@@ -150,10 +152,12 @@ export default function WishList() {
     const title = e.target.titleSearch.value
 
     if (title === '') {
-      const url = `http://localhost:3000/allBlogs`
+      const url = `${import.meta.env.VITE_CONNECTION_STRING}/allBlogs`
       axios.get(url).then((res) => setBlogs(res.data))
     } else {
-      const url = `http://localhost:3000/allBlogs?title=${title}`
+      const url = `${
+        import.meta.env.VITE_CONNECTION_STRING
+      }/allBlogs?title=${title}`
       axios.get(url).then((res) => setBlogs(res.data))
     }
   }
@@ -198,15 +202,17 @@ export default function WishList() {
   }, [blogs, wishListBlogs])
 
   useEffect(() => {
-    axios('http://localhost:3000/wishListBlogs').then((res) => {
-      setWishListBlogs(res.data)
-      console.log(res.data)
-    })
+    axios(`${import.meta.env.VITE_CONNECTION_STRING}/wishListBlogs`).then(
+      (res) => {
+        setWishListBlogs(res.data)
+        console.log(res.data)
+      }
+    )
   }, [])
 
   const handleDelete = (id) => {
     axios
-      .delete(`http://localhost:3000/wishListBlogs/${id}`)
+      .delete(`${import.meta.env.VITE_CONNECTION_STRING}/wishListBlogs/${id}`)
       .then((res) => console.log(res.data))
   }
 

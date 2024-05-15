@@ -114,7 +114,7 @@ const FeaturedBlogs = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/allBlogs', {
+      .get(`${import.meta.env.VITE_CONNECTION_STRING}/allBlogs`, {
         params: {
           _limit: 6,
         },
