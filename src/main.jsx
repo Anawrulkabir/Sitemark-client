@@ -15,6 +15,7 @@ import BlogDetails from './pages/BlogDetails'
 import FeaturedBlogsPage from './pages/FeaturedBlogsPage'
 import WishList from './pages/WishList'
 import PrivateRoute from './routes/PrivateRoute'
+import UpdateDetails from './pages/UpdateDetails'
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,14 @@ const router = createBrowserRouter([
         element: <AllBlogs />,
         loader: () =>
           fetch(`${import.meta.env.VITE_CONNECTION_STRING}/allBlogs`),
+      },
+      {
+        path: '/updateBlog/:id',
+        element: <UpdateDetails />,
+        loader: ({ params }) =>
+          fetch(
+            `${import.meta.env.VITE_CONNECTION_STRING}/allBlogs/${params.id}`
+          ),
       },
       {
         path: '/all-blogs/:id',

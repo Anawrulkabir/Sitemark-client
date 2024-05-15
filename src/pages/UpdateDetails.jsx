@@ -16,11 +16,26 @@ import { useContext, useEffect } from 'react'
 import { AuthContext } from '../provider/AuthProvider'
 import axios from 'axios'
 import toast, { Toaster } from 'react-hot-toast'
+import { useLoaderData } from 'react-router-dom'
 
-export default function AddBlogs() {
+export default function UpdateDetails() {
+  const blog = useLoaderData()
+  const {
+    _id,
+    category,
+    title,
+    image,
+    detailed_description,
+    additional_info,
+    viewcount,
+    likes,
+    description,
+  } = blog
+  const { author, published_date, email } = additional_info
+
   const { user } = useContext(AuthContext)
 
-  const handleCreateBlog = (e) => {
+  const handleUpdateBlog = (e) => {
     e.preventDefault()
 
     const form = e.target
@@ -48,39 +63,21 @@ export default function AddBlogs() {
       },
     }
 
-    console.log(post)
-
-    // fetch('http://localhost:3000/addBlog', {
-    //   method: 'POST',
-    //   headers: {
-    //     'content-type': 'application/json',
-    //   },
-    //   body: JSON.stringify(post),
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     console.log(data)
-    //     if (data.insertedId) {
-    //       toast.success('Created a new blog post.')
-    //     }
-    //   })
-    //   .catch((error) => console.log(error.message))
-
     axios
-      .post(`${import.meta.env.VITE_CONNECTION_STRING}/addBlog`, post)
+      .put(`${import.meta.env.VITE_CONNECTION_STRING}/update/${_id}`, post)
       .then((res) => {
         console.log(res.data)
-        toast.success('Created a new blog post.')
+        toast.success('Successfull Updated this post.')
       })
       .catch((err) => console.log(err.message))
 
-    form.reset()
+    // console.log(post)
   }
 
   return (
-    <form className="lg:mx-32 mx-5 my-20 lg:my-32" onSubmit={handleCreateBlog}>
+    <form className="lg:mx-32 mx-5 my-20 lg:my-32" onSubmit={handleUpdateBlog}>
       <h1 className="lg:text-5xl text-3xl font-extrabold text-center text-[#0B65C2] lg:py-0 py-3">
-        Upload Your Blogs
+        Update Your Blog
       </h1>
       <div className=" lg:p-10 lg:m-10 rounded-lg ">
         <div className="mt-3">
@@ -95,6 +92,7 @@ export default function AddBlogs() {
               <select
                 id="category"
                 name="category"
+                defaultValue={category}
                 autoComplete="category-name"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
               >
@@ -116,12 +114,13 @@ export default function AddBlogs() {
                 <div className="mt-2">
                   <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                     {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
-                    workcation.com/
-                  </span> */}
+                      workcation.com/
+                    </span> */}
                     <input
                       type="text"
                       name="title"
                       id="title"
+                      defaultValue={title}
                       // autoComplete="title"
                       className="block flex-1 border-0 bg-transparent py-1.5  text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 pl-2"
                       placeholder="Data Science, Python , App Dev ..."
@@ -139,12 +138,13 @@ export default function AddBlogs() {
                 <div className="mt-2">
                   <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                     {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
-                    workcation.com/
-                  </span> */}
+                      workcation.com/
+                    </span> */}
                     <input
                       type="text"
                       name="shortDescription"
                       id="shortDesp"
+                      defaultValue={description}
                       autoComplete="title"
                       className="block flex-1 border-0 bg-transparent py-1.5  text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 pl-2"
                       placeholder="Write a short description"
@@ -164,9 +164,10 @@ export default function AddBlogs() {
                   <textarea
                     id="description"
                     name="description"
+                    defaultValue={detailed_description}
                     rows={3}
                     className="block w-full pl-2 pt-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    defaultValue={''}
+                    // defaultValue={''}
                     placeholder="Data Science is currently on trends.."
                   />
                 </div>
@@ -176,25 +177,25 @@ export default function AddBlogs() {
               </div>
 
               {/* <div className="col-span-full">
-              <label
-                htmlFor="photo"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Photo
-              </label>
-              <div className="mt-2 flex items-center gap-x-3">
-                <UserCircleIcon
-                  className="h-12 w-12 text-gray-300"
-                  aria-hidden="true"
-                />
-                <button
-                  type="button"
-                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                <label
+                  htmlFor="photo"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Change
-                </button>
-              </div>
-            </div> */}
+                  Photo
+                </label>
+                <div className="mt-2 flex items-center gap-x-3">
+                  <UserCircleIcon
+                    className="h-12 w-12 text-gray-300"
+                    aria-hidden="true"
+                  />
+                  <button
+                    type="button"
+                    className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                  >
+                    Change
+                  </button>
+                </div>
+              </div> */}
 
               <div className="col-span-full">
                 <label
@@ -234,6 +235,7 @@ export default function AddBlogs() {
                       className="border px-2 flex justify-center rounded-lg text-center border-dashed py-2 border-purple-500"
                       placeholder="Paste Link Here"
                       name="imageUrl"
+                      defaultValue={image}
                     />
                   </div>
                 </div>
@@ -262,7 +264,7 @@ export default function AddBlogs() {
                     type="text"
                     name="first-name"
                     id="first-name"
-                    //   defaultValue={user.displayName}
+                    defaultValue={user.displayName}
                     autoComplete="given-name"
                     className="block pl-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -299,7 +301,7 @@ export default function AddBlogs() {
                     id="email"
                     name="email"
                     type="email"
-                    //   defaultValue={user.email}
+                    defaultValue={user.email}
                     autoComplete="email"
                     className="block  pl-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -548,7 +550,7 @@ export default function AddBlogs() {
             type="submit"
             className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            Save
+            Update
           </button>
         </div>
       </div>

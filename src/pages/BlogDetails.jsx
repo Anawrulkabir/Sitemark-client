@@ -4,11 +4,12 @@ import {
   ServerIcon,
 } from '@heroicons/react/20/solid'
 import { EyeIcon, HeartIcon } from '@heroicons/react/24/solid'
-import { Button } from '@mui/material'
+import { Button, Tooltip } from '@mui/material'
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
-import { useLoaderData } from 'react-router-dom'
+import { Link, useLoaderData } from 'react-router-dom'
 import { AuthContext } from '../provider/AuthProvider'
+import toast from 'react-hot-toast'
 
 export default function BlogDetails() {
   const blog = useLoaderData()
@@ -34,30 +35,31 @@ export default function BlogDetails() {
     const comment = e.target.comments.value
     console.log(comment)
 
-    const commentData = {
-      image: user?.photoURL,
-      comment: comment,
-      blogId: _id,
-      postedTime: new Date(),
-      email: user?.email,
-    }
+    if (user.email === additional_info.email) {
+      toast.error('You cannot comment on your own post.')
+    } else {
+      const commentData = {
+        image: user?.photoURL,
+        comment: comment,
+        blogId: _id,
+        postedTime: new Date(),
+        email: user?.email,
+      }
 
-    // axios.post('http://localhost:3000/comments', commentData).then((res) => {
-    //   console.log(res.data)
-    //   // setComments([...comments, res.data])
-    // })
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_CONNECTION_STRING}/comments`,
-        commentData
-      )
-      console.log(res.data)
+      try {
+        const res = await axios.post(
+          `${import.meta.env.VITE_CONNECTION_STRING}/comments`,
+          commentData
+        )
+        console.log(res.data)
 
-      // Update comments state with the new comment
-      setComments([...comments, res.data])
-    } catch (error) {
-      console.error('Error posting comment:', error)
+        // Update comments state with the new comment
+        setComments([...comments, res.data])
+      } catch (error) {
+        console.error('Error posting comment:', error)
+      }
     }
+    e.target.reset()
   }
 
   useEffect(() => {
@@ -103,9 +105,34 @@ export default function BlogDetails() {
         <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
           <div className="lg:pr-4">
             <div className="lg:max-w-lg">
-              <p className="text-base font-semibold leading-7 text-indigo-600">
-                {category}
-              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-base font-semibold leading-7 text-indigo-600">
+                  {category}
+                </p>
+                {user.email === email && (
+                  <Tooltip title="Update Post">
+                    <Link to={`/updateBlog/${_id}`}>
+                      <button className="">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                          />
+                        </svg>
+                      </button>
+                    </Link>
+                  </Tooltip>
+                )}
+              </div>
+
               <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 {title}
               </h1>
@@ -198,7 +225,7 @@ export default function BlogDetails() {
               </ul>
               <div className="mt-12 ">
                 <p className="font-bold">Comments</p>
-                <div className="border-t p-4">
+                <div className="border-t p-4 flex flex-col gap-7">
                   {comments.map((comment) => (
                     <>
                       <div className="flex items-center gap-2">
@@ -206,11 +233,16 @@ export default function BlogDetails() {
                           <img
                             src={comment.image}
                             alt=""
-                            className="h-5 w-5 rounded-full"
+                            className="h-6 w-6 rounded-full"
                           />
                         </div>
-                        <div className="border px-3 rounded-full">
-                          <p>{comment.comment}</p>
+                        <div className="relative ">
+                          <div className="border px-3 rounded-full">
+                            <p className="">{comment.comment}</p>
+                          </div>
+                          <p className="text-[9px] absolute top-3/4 left-[10px]">
+                            {comment.postedTime.slice(14, 19)}
+                          </p>
                         </div>
                       </div>
                     </>
