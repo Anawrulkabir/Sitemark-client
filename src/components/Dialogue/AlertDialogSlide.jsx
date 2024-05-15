@@ -8,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Slide from '@mui/material/Slide'
 import { AuthContext } from '../../provider/AuthProvider'
 import UpdateBioDialog from './UpdateBioDialog'
+import { Link } from 'react-router-dom'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
@@ -45,29 +46,36 @@ export default function AlertDialogSlide() {
           <img
             src={user.photoURL}
             alt=""
-            className="rounded-full mt-5 border-2 border-green-700 p-1"
+            className="rounded-full mt-5 border-2 border-green-700 p-1  object-cover h-32 w-32 "
           />
         </DialogTitle>
         <DialogContent className="text-center">
-          <DialogContentText id="alert-dialog-slide-description">
-            <p className="text-lg font-medium">{user.displayName}</p>
+          <DialogContentText id="alert-dialog-slide-description" className="">
+            <p className="text-2xl font-bold">{user.displayName}</p>
+          </DialogContentText>
+          <DialogContentText
+            id="alert-dialog-slide-description"
+            className="border-b pb-2"
+          >
+            <p className="text-xs text-blue-600 mt-0 mb-1">{user.email}</p>
           </DialogContentText>
           <DialogContentText id="alert-dialog-slide-description">
-            <p className="text-xs text-blue-600 mt-4 mb-1">{user.email}</p>
-          </DialogContentText>
-          <DialogContentText id="alert-dialog-slide-description">
-            <p className="text-xs text-blue-600">
+            <p className="text-xs text-zinc-400 mt-3">
               User Created: {user.metadata.creationTime}
             </p>
           </DialogContentText>
           <DialogContentText id="alert-dialog-slide-description">
-            <p className="text-xs text-blue-600">
+            <p className="text-xs text-zinc-400">
               Last Login: {user.metadata.lastSignInTime}
             </p>
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions className="flex  border mx-auto">
           {/* <Button onClick={toggleDialog}>Update Bio</Button> */}
+          <Link to="/wishlist">
+            <Button onClick={handleClose}>Wishlist</Button>
+          </Link>
+
           <Button>Update Bio</Button>
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>

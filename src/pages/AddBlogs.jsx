@@ -15,6 +15,7 @@ import { PhotoIcon } from '@heroicons/react/24/solid'
 import { useContext, useEffect } from 'react'
 import { AuthContext } from '../provider/AuthProvider'
 import axios from 'axios'
+import toast, { Toaster } from 'react-hot-toast'
 
 export default function Example() {
   const { user } = useContext(AuthContext)
@@ -25,21 +26,55 @@ export default function Example() {
     const form = e.target
     const category = form.category.value
     const title = form.title.value
-    const description = form.description.value
-    const image = form.file_upload.value
-    const imageurl = form.imageUrl.value
+    const description = form.shortDescription.value
+    const detailed_description = form.description.value
+    // const image = form.file_upload.value
+    const image = form.imageUrl.value
+    const viewcount = 3400
+    const likes = 233
 
-    const post = { category, title, description, imageurl }
-
-    console.log(category, title, description, imageurl)
-
-    try {
-      axios
-        .post('http://localhost:3000/addBlog', post)
-        .then((res) => console.log(res.data))
-    } catch {
-      ;(err) => console.log(err)
+    const post = {
+      category,
+      title,
+      description,
+      image,
+      detailed_description,
+      viewcount,
+      likes,
+      additional_info: {
+        author: user.displayName,
+        published_date: new Date().toISOString().split('T')[0],
+        email: user.email,
+      },
     }
+
+    console.log(post)
+
+    // fetch('http://localhost:3000/addBlog', {
+    //   method: 'POST',
+    //   headers: {
+    //     'content-type': 'application/json',
+    //   },
+    //   body: JSON.stringify(post),
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log(data)
+    //     if (data.insertedId) {
+    //       toast.success('Created a new blog post.')
+    //     }
+    //   })
+    //   .catch((error) => console.log(error.message))
+
+    axios
+      .post('http://localhost:3000/addBlog', post)
+      .then((res) => {
+        console.log(res.data)
+        toast.success('Created a new blog post.')
+      })
+      .catch((err) => console.log(err.message))
+
+    form.reset()
   }
 
   return (
@@ -87,9 +122,32 @@ export default function Example() {
                       type="text"
                       name="title"
                       id="title"
-                      autoComplete="title"
+                      // autoComplete="title"
                       className="block flex-1 border-0 bg-transparent py-1.5  text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 pl-2"
                       placeholder="Data Science, Python , App Dev ..."
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="sm:col-span-4">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Short Description
+                </label>
+                <div className="mt-2">
+                  <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                    {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
+                    workcation.com/
+                  </span> */}
+                    <input
+                      type="text"
+                      name="shortDescription"
+                      id="shortDesp"
+                      autoComplete="title"
+                      className="block flex-1 border-0 bg-transparent py-1.5  text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 pl-2"
+                      placeholder="Write a short description"
                     />
                   </div>
                 </div>
@@ -100,7 +158,7 @@ export default function Example() {
                   htmlFor="about"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Description
+                  Detailed Description
                 </label>
                 <div className="mt-2">
                   <textarea
@@ -348,8 +406,8 @@ export default function Example() {
               Notifications
             </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              We'll always let you know about important changes, but you pick
-              what else you want to hear about.
+              We&apos;ll always let you know about important changes, but you
+              pick what else you want to hear about.
             </p>
 
             <div className="mt-10 space-y-10">
@@ -494,6 +552,7 @@ export default function Example() {
           </button>
         </div>
       </div>
+      <Toaster position="bottom-right" />
     </form>
   )
 }

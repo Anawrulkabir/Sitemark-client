@@ -124,16 +124,13 @@ const topics = [
   'Cloud Computing',
 ]
 
-export default function AllBlogs() {
+export default function WishList() {
   const [blogs, setBlogs] = useState(useLoaderData())
   const [isFilled, setIsFilled] = useState(false)
-  const [filledPosts, setFilledPosts] = useState([])
-  const { user } = useContext(AuthContext)
   const [wishListBlogs, setWishListBlogs] = useState([])
-  // const [filteredArr, setFilteredArr] = useState([])
-  // const filteredArr = []
+  const { user } = useContext(AuthContext)
 
-  // const { _id, title, additional_info, category, description } = blogs
+  const { _id, title, additional_info, category, description } = blogs
 
   const handleSort = (e) => {
     e.preventDefault()
@@ -147,10 +144,6 @@ export default function AllBlogs() {
       const url = `http://localhost:3000/allBlogs?category=${category}`
       axios.get(url).then((res) => setBlogs(res.data))
     }
-
-    // fetch(url)
-    //   .then((res) => console.log(res))
-    //   .then((data) => setBlogs(data))
   }
   const handleSortByTitle = (e) => {
     e.preventDefault()
@@ -163,17 +156,9 @@ export default function AllBlogs() {
       const url = `http://localhost:3000/allBlogs?title=${title}`
       axios.get(url).then((res) => setBlogs(res.data))
     }
-
-    // fetch(url)
-    //   .then((res) => console.log(res))
-    //   .then((data) => setBlogs(data))
   }
 
-  // const toggleFill = () => {
-  //   setIsFilled(!isFilled)
-  //   console.log('btn clicked')
-  // }
-  // console.log(isFilled)
+  const [filledPosts, setFilledPosts] = useState([])
 
   const toggleFill = (postId) => {
     // Use functional form of setState to ensure correct state updates
@@ -191,6 +176,13 @@ export default function AllBlogs() {
 
   const getMatchedBlogs = (blogs, wishListBlogs) => {
     const matchedBlogIds = wishListBlogs.map((item) => item.blogId)
+    const loggedInUserEmail = user.email
+    const wishEmail = wishListBlogs.filter(
+      (email) => email.email === loggedInUserEmail
+    )
+    console.log(matchedBlogIds)
+    console.log(loggedInUserEmail)
+    console.log(wishEmail)
     const matchedBlogs = blogs.filter((blog) =>
       matchedBlogIds.includes(blog._id)
     )
@@ -205,19 +197,6 @@ export default function AllBlogs() {
     setMatchedBlogs(matched)
   }, [blogs, wishListBlogs])
 
-  const handleAddToWishLIst = (_id) => {
-    console.log('cart id clicked', _id)
-
-    const wishItem = {
-      email: user?.email,
-      blogId: _id,
-      published_date: new Date(),
-    }
-
-    axios
-      .post('http://localhost:3000/addToWishList', wishItem)
-      .then.catch((error) => console.log(error.message))
-  }
   useEffect(() => {
     axios('http://localhost:3000/wishListBlogs').then((res) => {
       setWishListBlogs(res.data)
@@ -225,14 +204,18 @@ export default function AllBlogs() {
     })
   }, [])
 
-  console.log(matchedBlogs)
+  const handleDelete = (id) => {
+    axios
+      .delete(`http://localhost:3000/wishListBlogs/${id}`)
+      .then((res) => console.log(res.data))
+  }
 
   return (
     <div className="bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Explore Our Blogs
+            Your Wishlist Blogs
           </h2>
           <p className="mt-2 text-lg leading-8 text-gray-600">
             Learn how to grow your business with our expert advice.
@@ -288,7 +271,7 @@ export default function AllBlogs() {
         </div>
 
         <div className="mx-auto  grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16  border-gray-200 pt-4 lg:mx-0 lg:max-w-none lg:grid-cols-3 ">
-          {blogs.map((post) => (
+          {matchedBlogs.map((post) => (
             <article
               key={post?._id}
               className="flex max-w-xl flex-col items-start justify-between shadow-sm rounded-md px-4 py-4  pb-5  hover:scale-[99%] hover:transition-transform duration-1000"
@@ -347,18 +330,33 @@ export default function AllBlogs() {
                       </Button>
                     </Link>
 
-                    <Tooltip title="Add to Wishlist">
+                    <Tooltip title="Remove from Wishlist">
                       <Button
                         // onClick={toggleFill}
                         onClick={() => {
                           toggleFill(post._id)
-                          handleAddToWishLIst(post._id)
+                          handleDelete(post._id)
                         }}
                         className="cursor-pointer border"
                         size="small"
                         variant="text"
                       >
                         <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                          />
+                        </svg>
+
+                        {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           // fill="none"
                           // fill={isFilled ? 'red' : 'none'}
@@ -382,7 +380,7 @@ export default function AllBlogs() {
                             strokeLinejoin="round"
                             d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
                           />
-                        </svg>
+                        </svg> */}
                       </Button>
                     </Tooltip>
                   </div>

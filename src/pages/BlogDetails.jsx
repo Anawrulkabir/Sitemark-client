@@ -4,12 +4,19 @@ import {
   ServerIcon,
 } from '@heroicons/react/20/solid'
 import { EyeIcon, HeartIcon } from '@heroicons/react/24/solid'
+import { Button } from '@mui/material'
+import axios from 'axios'
+import { useContext, useEffect, useState } from 'react'
 import { useLoaderData } from 'react-router-dom'
+import { AuthContext } from '../provider/AuthProvider'
 
 export default function BlogDetails() {
   const blog = useLoaderData()
+  const { user } = useContext(AuthContext)
+  const [comments, setComments] = useState([])
 
   const {
+    _id,
     category,
     title,
     image,
@@ -20,7 +27,45 @@ export default function BlogDetails() {
     description,
   } = blog
   const { author, published_date, email } = additional_info
-  console.log(category, title, image)
+  //   console.log(category, title, image)
+
+  const handleAddComments = async (e) => {
+    e.preventDefault()
+    const comment = e.target.comments.value
+    console.log(comment)
+
+    const commentData = {
+      image: user?.photoURL,
+      comment: comment,
+      blogId: _id,
+      postedTime: new Date(),
+      email: user?.email,
+    }
+
+    // axios.post('http://localhost:3000/comments', commentData).then((res) => {
+    //   console.log(res.data)
+    //   // setComments([...comments, res.data])
+    // })
+    try {
+      const res = await axios.post(
+        'http://localhost:3000/comments',
+        commentData
+      )
+      console.log(res.data)
+
+      // Update comments state with the new comment
+      setComments([...comments, res.data])
+    } catch (error) {
+      console.error('Error posting comment:', error)
+    }
+  }
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3000/comments?blogId=${_id}`)
+      .then((res) => setComments(res.data))
+  })
+
   return (
     <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0 ">
       <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -151,24 +196,48 @@ export default function BlogDetails() {
                   </span>
                 </li>
               </ul>
-              {/* <p className="mt-8">
-                Et vitae blandit facilisi magna lacus commodo. Vitae sapien duis
-                odio id et. Id blandit molestie auctor fermentum dignissim.
-                Lacus diam tincidunt ac cursus in vel. Mauris varius vulputate
-                et ultrices hac adipiscing egestas. Iaculis convallis ac tempor
-                et ut. Ac lorem vel integer orci.
-              </p>
-              <h2 className="mt-16 text-2xl font-bold tracking-tight text-gray-900">
-                No server? No problem.
-              </h2>
-              <p className="mt-6">
-                Id orci tellus laoreet id ac. Dolor, aenean leo, ac etiam
-                consequat in. Convallis arcu ipsum urna nibh. Pharetra, euismod
-                vitae interdum mauris enim, consequat vulputate nibh. Maecenas
-                pellentesque id sed tellus mauris, ultrices mauris. Tincidunt
-                enim cursus ridiculus mi. Pellentesque nam sed nullam sed diam
-                turpis ipsum eu a sed convallis diam.
-              </p> */}
+              <div className="mt-12 ">
+                <p className="font-bold">Comments</p>
+                <div className="border-t p-4">
+                  {comments.map((comment) => (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <img
+                            src={comment.image}
+                            alt=""
+                            className="h-5 w-5 rounded-full"
+                          />
+                        </div>
+                        <div className="border px-3 rounded-full">
+                          <p>{comment.comment}</p>
+                        </div>
+                      </div>
+                    </>
+                  ))}
+                </div>
+                <form onSubmit={handleAddComments}>
+                  <div className="flex gap-3 items-center mt-4">
+                    {/* <form> */}
+                    <input
+                      type="text"
+                      name="comments"
+                      className="border w-2/3 rounded-xl pl-3 text-sm py-2"
+                      placeholder="Add your comments"
+                    />
+                    <Button
+                      type="submit"
+                      value={'Search'}
+                      className="border"
+                      variant="contained"
+                      size="small"
+                    >
+                      Comment
+                    </Button>
+                    {/* </form> */}
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>

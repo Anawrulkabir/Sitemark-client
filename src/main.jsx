@@ -13,6 +13,8 @@ import AddBlogs from './pages/AddBlogs'
 import AllBlogs from './pages/AllBlogs'
 import BlogDetails from './pages/BlogDetails'
 import FeaturedBlogsPage from './pages/FeaturedBlogsPage'
+import WishList from './pages/WishList'
+import PrivateRoute from './routes/PrivateRoute'
 
 const router = createBrowserRouter([
   {
@@ -38,7 +40,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/addBlogs',
-        element: <AddBlogs></AddBlogs>,
+        element: (
+          <PrivateRoute>
+            <AddBlogs></AddBlogs>
+          </PrivateRoute>
+        ),
       },
       {
         path: '/all-blogs',
@@ -49,7 +55,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/all-blogs/:id',
-        element: <BlogDetails />,
+        element: (
+          <PrivateRoute>
+            <BlogDetails></BlogDetails>
+          </PrivateRoute>
+        ),
         loader: ({ params }) =>
           fetch(`http://localhost:3000/allBlogs/${params.id}`),
       },
@@ -57,6 +67,13 @@ const router = createBrowserRouter([
         path: '/featuredBlogs',
         element: <FeaturedBlogsPage />,
         loader: () => fetch('http://localhost:3000/allBlogs'),
+      },
+      {
+        path: '/wishlist',
+        element: <WishList />,
+        loader: () =>
+          // fetch('https://my-project-server-ten.vercel.app/allBlogs'),
+          fetch('http://localhost:3000/allBlogs'),
       },
     ],
   },

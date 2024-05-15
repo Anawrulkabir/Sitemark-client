@@ -56,16 +56,16 @@ function AppAppBar({ mode, toggleColorMode }) {
     }
   }
   // handle add blogs page - if user ? add blog page : sign up page
-  const handleAddBlogs = () => {
-    if (!user) {
-      setTimeout(() => {
-        navigate('/signin')
-      }, 1500)
-      toast.success('You must login to add blogs')
-    } else {
-      navigate('/addBlogs')
-    }
-  }
+  // const handleAddBlogs = () => {
+  //   if (!user) {
+  //     setTimeout(() => {
+  //       navigate('/signin')
+  //     }, 1500)
+  //     toast.success('You must login to add blogs')
+  //   } else {
+  //     navigate('/addBlogs')
+  //   }
+  // }
 
   return (
     <div>
@@ -198,7 +198,10 @@ function AppAppBar({ mode, toggleColorMode }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    <button onClick={handleAddBlogs}> Add Blogs </button>
+                    {/* <button onClick={handleAddBlogs}> Add Blogs </button> */}
+                    <Link to={'/addBlogs'}>
+                      <button> Add Blogs </button>
+                    </Link>
                   </Typography>
                 </MenuItem>
 
@@ -240,7 +243,7 @@ function AppAppBar({ mode, toggleColorMode }) {
                   <img
                     src={user.photoURL}
                     alt=""
-                    className="h-6 w-6 rounded-full"
+                    className="h-6 w-6 rounded-full object-cover ring-[1px] ring-blue-500"
                   />
                 </Button>
               ) : (
@@ -320,7 +323,14 @@ function AppAppBar({ mode, toggleColorMode }) {
                     />
                   </Box>
                   <MenuItem>
-                    <Link to={'/'}>Home</Link>
+                    <Link
+                      to={'/'}
+                      onClick={() => {
+                        setOpen(false)
+                      }}
+                    >
+                      Home
+                    </Link>
                   </MenuItem>
                   <MenuItem onClick={() => scrollToSection('features')}>
                     Features
@@ -341,8 +351,11 @@ function AppAppBar({ mode, toggleColorMode }) {
                     <Link to={'/featured-blogs'}> Recent Blogs </Link>
                   </MenuItem>
                   <MenuItem onClick={() => scrollToSection('faq')}>
-                    {/* <Link to={'/addBlogs'}> Add Blogs </Link> */}
-                    <button onClick={handleAddBlogs}> Add Blogs </button>
+                    <Link to={'/addBlogs'}>
+                      <button>Add Blogs</button>
+                    </Link>
+
+                    {/* <button onClick={handleAddBlogs}> Add Blogs </button> */}
                   </MenuItem>
                   {/* <MenuItem onClick={() => scrollToSection('faq')}>
                     FAQ
@@ -356,9 +369,11 @@ function AppAppBar({ mode, toggleColorMode }) {
                   <MenuItem>
                     <button
                       onClick={() => {
-                        toggleDialog()
+                        toggleDialog(false)
                         toggleDrawer(false)
+                        setOpen(false)
                       }}
+                      // onClose={toggleDrawer(true)}
                     >
                       My Profile
                     </button>

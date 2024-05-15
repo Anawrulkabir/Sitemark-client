@@ -43,18 +43,39 @@ export default function SignUp() {
     const firstname = data.get('firstName')
     const lastName = data.get('lastName')
     const photo = data.get('photo')
-
     const name = firstname + lastName
-    const regex = /^(?=.*[A-Z])(?=.*[a-z]).{6,}$/
+
+    // const regex = /^(?=.*[A-Z])(?=.*[a-z]).{6,}$/
+    // if (password.length < 6) {
+    //   setPassTextError('Password should be at least 6 character')
+    //   return // returning so that the validation stops here, no need to go to database in firebase
+    // } else if (!regex.test(password)) {
+    //   setPassTextError('Password must contain uppercase letter')
+    //   return
+    // } else {
+    //   setPassTextError('')
+    // }
+
+    const regexUpperCase = /^(?=.*[A-Z])/
+    const regexSpecialChar = /^(?=.*[^A-Za-z0-9])/
+    const regexLength = /^.{6,}$/
+
     if (password.length < 6) {
-      setPassTextError('Password should be at least 6 character')
-      return // returning so that the validation stops here, no need to go to database in firebase
-    } else if (!regex.test(password)) {
-      setPassTextError('Password must contain uppercase letter')
-      return
-    } else {
-      setPassTextError('')
+      setPassTextError('Password should be at least 6 characters')
+      return // returning so that the validation stops here, no need to go to the database in Firebase
     }
+
+    if (!regexUpperCase.test(password)) {
+      setPassTextError('Password must contain at least one uppercase letter')
+      return
+    }
+
+    if (!regexSpecialChar.test(password)) {
+      setPassTextError('Password must contain at least one special character')
+      return
+    }
+
+    setPassTextError('')
 
     const emailRegex = /^\S+@\S+\.\S+$/
 
