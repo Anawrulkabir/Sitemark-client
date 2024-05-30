@@ -284,9 +284,13 @@ export default function WishList() {
             >
               <img
                 alt=""
-                src="https://images.pexels.com/photos/6804595/pexels-photo-6804595.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                // src={post.image}
-                className="rounded-md mb-3"
+                // src="https://images.pexels.com/photos/6804595/pexels-photo-6804595.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                src={
+                  post?.image.split('/')[2] !== 'www.example.com'
+                    ? post?.image
+                    : 'https://images.pexels.com/photos/6804595/pexels-photo-6804595.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                }
+                className="rounded-md mb-3 object-cover"
               />
               <div className="flex items-center gap-x-4 text-xs">
                 <time

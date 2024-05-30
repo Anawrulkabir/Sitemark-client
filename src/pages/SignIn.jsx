@@ -19,6 +19,7 @@ import auth from '../firebase/firebase.config'
 import toast, { Toaster } from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { VscEye, VscEyeClosed } from 'react-icons/vsc'
+import { Helmet } from 'react-helmet'
 
 const defaultTheme = createTheme()
 
@@ -85,6 +86,9 @@ export default function SignIn() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
+      <Helmet>
+        <title>Sitemark | Sing in</title>
+      </Helmet>
       <Container component="main" maxWidth="xs" className="pt-10">
         <CssBaseline />
         <Box

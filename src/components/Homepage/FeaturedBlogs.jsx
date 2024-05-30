@@ -159,7 +159,12 @@ const FeaturedBlogs = () => {
                 className="flex max-w-xl flex-col items-start justify-between shadow-sm rounded-md px-4 py-4  pb-5"
               >
                 <img
-                  src="https://images.pexels.com/photos/6804595/pexels-photo-6804595.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                  src={
+                    post?.image == null
+                      ? post.image
+                      : 'https://images.pexels.com/photos/6804595/pexels-photo-6804595.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                  }
+                  // src="https://images.pexels.com/photos/6804595/pexels-photo-6804595.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                   alt=""
                   className="rounded-md mb-3"
                 />

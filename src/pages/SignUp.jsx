@@ -26,6 +26,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import auth from '../firebase/firebase.config'
 import { PhotoIcon } from '@heroicons/react/20/solid'
 import { imageUpload } from '../api/utlis'
+import { Helmet } from 'react-helmet'
 // import { useForm } from 'react-hook-form'
 
 const defaultTheme = createTheme()
@@ -132,6 +133,9 @@ export default function SignUp() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
+      <Helmet>
+        <title>Sitemark | Sing Up</title>
+      </Helmet>
       <Container component="main" maxWidth="xs" className="pt-10">
         <CssBaseline />
         <Box

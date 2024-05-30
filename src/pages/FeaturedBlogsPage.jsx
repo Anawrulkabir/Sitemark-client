@@ -1,4 +1,5 @@
 import { DataGrid } from '@mui/x-data-grid'
+import { Helmet } from 'react-helmet'
 import { Link, useLoaderData, useParams } from 'react-router-dom'
 
 // const id = useParams()
@@ -128,20 +129,25 @@ export default function FeaturedBlogsPage() {
   })
 
   return (
-    <div className="mx-5 lg:mx-20 border mt-24 lg:mt-32">
-      <div className="w-full">
-        <DataGrid
-          rows={newRows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
-        />
+    <>
+      <Helmet>
+        <title>Sitemark | Featured Blogs</title>
+      </Helmet>
+      <div className="mx-5 lg:mx-20 border mt-24 lg:mt-32">
+        <div className="w-full">
+          <DataGrid
+            rows={newRows}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+            checkboxSelection
+          />
+        </div>
       </div>
-    </div>
+    </>
   )
 }
