@@ -264,7 +264,10 @@ function AppAppBar({ mode, toggleColorMode }) {
 
               {user ? (
                 <Button
-                  onClick={() => logOut()}
+                  onClick={() => {
+                    logOut()
+                    navigate('/')
+                  }}
                   color="primary"
                   variant="contained"
                   size="small"

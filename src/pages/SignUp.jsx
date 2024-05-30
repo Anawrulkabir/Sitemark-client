@@ -15,6 +15,7 @@ import { useContext, useState } from 'react'
 import { AuthContext } from '../provider/AuthProvider'
 import { VscEye, VscEyeClosed } from 'react-icons/vsc'
 import toast, { Toaster } from 'react-hot-toast'
+import profileNotFound from '../../public/user-not-found.jpg'
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -23,6 +24,9 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import auth from '../firebase/firebase.config'
+import { PhotoIcon } from '@heroicons/react/20/solid'
+import { imageUpload } from '../api/utlis'
+// import { useForm } from 'react-hook-form'
 
 const defaultTheme = createTheme()
 
@@ -34,27 +38,30 @@ export default function SignUp() {
 
   let navigate = useNavigate()
   let location = useLocation()
+  // const { register, handleSubmit } = useForm()
+  // const onSubmit = (event) => {
+  //   event.preventDefault()
+  //   // console.log(data)
+  // }
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    const email = data.get('email')
-    const password = data.get('password')
-    const firstname = data.get('firstName')
-    const lastName = data.get('lastName')
-    const photo = data.get('photo')
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const form = e.target
+    const email = form.email.value
+    const password = form.password.value
+    const firstname = form.firstName.value
+    const lastName = form.lastName.value
+    // const photo = form.get('photo')
     const name = firstname + lastName
+    const image = form.image.files[0]
+    const formData = new FormData()
+    formData.append('image', image)
+    let image_url = profileNotFound
 
-    // const regex = /^(?=.*[A-Z])(?=.*[a-z]).{6,}$/
-    // if (password.length < 6) {
-    //   setPassTextError('Password should be at least 6 character')
-    //   return // returning so that the validation stops here, no need to go to database in firebase
-    // } else if (!regex.test(password)) {
-    //   setPassTextError('Password must contain uppercase letter')
-    //   return
-    // } else {
-    //   setPassTextError('')
-    // }
+    console.log(email, password, firstname, lastName, image_url)
+
+    // 1. upload image
+    image_url = await imageUpload(image)
 
     const regexUpperCase = /^(?=.*[A-Z])/
     const regexSpecialChar = /^(?=.*[^A-Za-z0-9])/
@@ -90,7 +97,7 @@ export default function SignUp() {
       .then((result) => {
         updateProfile(result.user, {
           displayName: name,
-          photoURL: photo,
+          photoURL: image_url,
         })
         toast.success(`Account created successfully, ${name}`)
         // console.log(photoUrl)
@@ -176,48 +183,42 @@ export default function SignUp() {
               or sign up with
             </p>
           </div>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                />
-                {emailError && (
-                  <p className="text-red-500 text-[8px]">{emailError}</p>
-                )}
-              </Grid>
-              <Grid item xs={12}>
+          <form onSubmit={handleSubmit}>
+            <Box sx={{ mt: 3 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    autoComplete="given-name"
+                    name="firstName"
+                    required
+                    fullWidth
+                    id="firstName"
+                    label="First Name"
+                    autoFocus
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="lastName"
+                    label="Last Name"
+                    name="lastName"
+                    autoComplete="family-name"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    type="email"
+                  />
+                </Grid>
+                {/* <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
@@ -226,55 +227,87 @@ export default function SignUp() {
                   name="photo"
                   autoComplete="photo"
                 />
-              </Grid>
+              </Grid> */}
+                <Grid item xs={12}>
+                  <div className="col-span-full">
+                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-3">
+                      <div className="text-center">
+                        <PhotoIcon
+                          className="mx-auto h-12 w-12 text-gray-300"
+                          aria-hidden="true"
+                        />
+                        <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                          <label
+                            htmlFor="file-upload"
+                            className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                          >
+                            <span>Upload your photo</span>
+                            <input
+                              id="file-upload"
+                              name="image"
+                              type="file"
+                              className="sr-only"
+                              required
+                            />
+                          </label>
+                          <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs leading-5 text-gray-600">
+                          PNG, JPG, GIF up to 10MB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Grid>
 
-              <Grid item xs={12} className="relative">
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type={!showPassword ? 'password' : 'text'}
-                  id="password"
-                  autoComplete="new-password"
-                />
-                <div
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute cursor-pointer top-1/2 right-0 -translate-y-[10%] -translate-x-[70%] text-[18px]"
-                >
-                  {/* {showPassword ? <FaEye /> : <FaEyeSlash />} */}
-                  {showPassword ? <VscEye /> : <VscEyeClosed />}
-                </div>
-                {passTextError && (
-                  <p className="text-red-500 text-[8px]">{passTextError}</p>
-                )}
-              </Grid>
+                <Grid item xs={12} className="relative">
+                  <TextField
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type={!showPassword ? 'password' : 'text'}
+                    id="password"
+                    autoComplete="new-password"
+                  />
+                  <div
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute cursor-pointer top-1/2 right-0 -translate-y-[10%] -translate-x-[70%] text-[18px]"
+                  >
+                    {/* {showPassword ? <FaEye /> : <FaEyeSlash />} */}
+                    {showPassword ? <VscEye /> : <VscEyeClosed />}
+                  </div>
+                  {passTextError && (
+                    <p className="text-red-500 text-[8px]">{passTextError}</p>
+                  )}
+                </Grid>
 
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox value="allowExtraEmails" color="primary" />
+                    }
+                    label="I want to receive inspiration, marketing promotions and updates via email."
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/signin" variant="body2">
-                  Already have an account? Sign in
-                </Link>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign Up
+              </Button>
+              <Grid container justifyContent="flex-end">
+                <Grid item>
+                  <Link href="/signin" variant="body2">
+                    Already have an account? Sign in
+                  </Link>
+                </Grid>
               </Grid>
-            </Grid>
-          </Box>
+            </Box>
+          </form>
         </Box>
         {/* <Copyright sx={{ mt: 5 }} /> */}
       </Container>
