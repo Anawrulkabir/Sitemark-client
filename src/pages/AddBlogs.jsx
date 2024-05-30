@@ -12,15 +12,24 @@ const topics = [
 ]
 
 import { PhotoIcon } from '@heroicons/react/24/solid'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../provider/AuthProvider'
 import axios from 'axios'
 import toast, { Toaster } from 'react-hot-toast'
+import profileNotFound from '../../public/user-not-found.jpg'
+import { imageUpload } from '../api/utlis'
 
 export default function AddBlogs() {
   const { user } = useContext(AuthContext)
+  const [imagePreview, setImagePreview] = useState()
+  const [imageText, setImageText] = useState('')
 
-  const handleCreateBlog = (e) => {
+  const handleImagePreview = (image) => {
+    setImagePreview(URL.createObjectURL(image))
+    setImageText(image.name)
+  }
+
+  const handleCreateBlog = async (e) => {
     e.preventDefault()
 
     const form = e.target
@@ -29,10 +38,16 @@ export default function AddBlogs() {
     const description = form.shortDescription.value
     const detailed_description = form.description.value
     // const image = form.file_upload.value
-    const image = form.imageUrl.value
+    // const image = form.imageUrl.value
     const viewcount = 3400
     const likes = 233
+    const image_file = form.image.files[0]
+    const formData = new FormData()
+    formData.append('image', image_file)
+    let image = profileNotFound
 
+    // 1. upload image
+    image = await imageUpload(image_file)
     const post = {
       category,
       title,
@@ -205,10 +220,18 @@ export default function AddBlogs() {
                 </label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                   <div className="text-center">
-                    <PhotoIcon
-                      className="mx-auto h-12 w-12 text-gray-300"
-                      aria-hidden="true"
-                    />
+                    {!imagePreview ? (
+                      <PhotoIcon
+                        className="mx-auto h-12 w-12 text-gray-300"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <img
+                        className="mx-auto h-20 w-20 object-cover rounded-md hover:scale-105"
+                        src={imagePreview}
+                      />
+                    )}
+
                     <div className="mt-4 flex text-sm leading-6 text-gray-600">
                       <label
                         htmlFor="file-upload"
@@ -220,21 +243,25 @@ export default function AddBlogs() {
                           name="file_upload"
                           type="file"
                           className="sr-only"
+                          onChange={(e) => {
+                            let image = e.target.files[0]
+                            handleImagePreview(image)
+                          }}
                         />
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
-                    <p className="text-xs leading-5 text-gray-600">
-                      PNG, JPG, GIF up to 10MB
+                    <p className="text-xs leading-5 text-green-600">
+                      {imageText ? imageText : 'PNG, JPG, GIF up to 10MB'}
                     </p>
-                    <p className="text-xs leading-5 text-gray-600">OR</p>
+                    {/* <p className="text-xs leading-5 text-gray-600">OR</p>
 
                     <input
                       type="text"
                       className="border px-2 flex justify-center rounded-lg text-center border-dashed py-2 border-purple-500"
                       placeholder="Paste Link Here"
                       name="imageUrl"
-                    />
+                    /> */}
                   </div>
                 </div>
               </div>

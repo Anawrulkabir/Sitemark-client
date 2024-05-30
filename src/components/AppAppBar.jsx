@@ -369,18 +369,21 @@ function AppAppBar({ mode, toggleColorMode }) {
                   <MenuItem>
                     <Link to="featuredBlogs">Featured</Link>
                   </MenuItem>
-                  <MenuItem>
-                    <button
-                      onClick={() => {
-                        toggleDialog(false)
-                        toggleDrawer(false)
-                        setOpen(false)
-                      }}
-                      // onClose={toggleDrawer(true)}
-                    >
-                      My Profile
-                    </button>
-                  </MenuItem>
+                  {user && (
+                    <MenuItem>
+                      <button
+                        onClick={() => {
+                          toggleDialog(false)
+                          toggleDrawer(false)
+                          setOpen(false)
+                        }}
+                        // onClose={toggleDrawer(true)}
+                      >
+                        My Profile
+                      </button>
+                    </MenuItem>
+                  )}
+
                   <Divider />
                   {!user && (
                     <MenuItem>
